@@ -1,0 +1,37 @@
+{
+  "tasks": [
+    {
+      "taskName": "Task 1",
+      "assignTo": 1,
+      "expiryDate": "22/11/2023",
+      "state": 1,
+      "id": 1699548229596
+    },
+    {
+      "taskName": "Task 2",
+      "assignTo": 2,
+      "expiryDate": "28/11/2023",
+      "state": 1,
+      "id": 1699548236214
+    },
+    {
+      "taskName": "Task 3",
+      "assignTo": 2,
+      "expiryDate": "20/11/2023",
+      "state": 1,
+      "id": 1699548479119
+    }
+  ],
+  "users": [
+    {
+      "firstName": "Mario",
+      "lastName": "Rossi",
+      "id": 1
+    },
+    {
+      "firstName": "Marco",
+      "lastName": "Verdi",
+      "id": 2
+    }
+  ]
+}
