@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "firstName": "Mario",
+      "lastName": "Rossi",
+      "age": 20,
+      "id": 1698770058034
+    },
+    {
+      "firstName": "Marco",
+      "lastName": "Verdi",
+      "age": 22,
+      "id": 1698770102485
+    }
+  ]
+}
