@@ -8,18 +8,11 @@
       "id": 1699548229596
     },
     {
-      "taskName": "Task 2",
-      "assignTo": 2,
-      "expiryDate": "28/11/2023",
-      "state": 1,
-      "id": 1699548236214
-    },
-    {
-      "taskName": "Task 3",
-      "assignTo": 2,
-      "expiryDate": "20/11/2023",
-      "state": 1,
-      "id": 1699548479119
+      "taskName": "Task 4",
+      "assignTo": 1,
+      "expiryDate": "27/11/2023",
+      "state": 0,
+      "id": 1699881502044
     }
   ],
   "users": [

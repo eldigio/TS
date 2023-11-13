@@ -7,7 +7,6 @@ import random from "random";
 import { Task } from ".";
 
 /* Components */
-import { TaskDetail } from "../components/TaskDetail";
 
 /* Icons */
 import { check, xMark } from "./icons";
@@ -64,7 +63,7 @@ export const td = (options: Partial<HTMLTableColElement>, children?: Element[]) 
 
 export const label = (options: Partial<HTMLLabelElement>, children?: Element[]) => CE("label", options, children);
 
-export const addBtn = ({ id, onclick, textContent = "submit" }: { id?: string; onclick?: any; textContent?: string }) =>
+export const addBtn = ({ id, onclick, textContent = "submit" }: { id?: string; onclick?: (e: Event) => void; textContent?: string }) =>
   button({ className: "btn btn-outline btn-primary", textContent, id, onclick });
 
 const stringToElement = (string: string) => {
@@ -78,14 +77,14 @@ const removeAlert = (alert: ChildNode) => {
   alert.addEventListener("animationend", () => alert.remove());
 };
 
-const getExpiryDate = () => {
+export const getExpiryDate = () => {
   return DateTime.now()
     .plus({ day: random.int(2, 21) })
     .setLocale("it")
     .toLocaleString({ day: "2-digit", month: "2-digit", year: "numeric" });
 };
 
-const getNewId = () => Date.now();
+export const getNewId = () => Date.now();
 
 export const selectTaskState = (id: number, state: number) => {
   return select(
@@ -108,12 +107,12 @@ export const selectTaskState = (id: number, state: number) => {
   );
 };
 
-const resetInputFields = () => {
+export const resetInputFields = () => {
   document.querySelector<HTMLInputElement>("#formTaskName")!.value = "";
   document.querySelector<HTMLSelectElement>("#formAssignTo")!.selectedIndex = 0;
 };
 
-const alert = async (type: string, message: string, wait: number = 3000) => {
+export const toast = async (type: string, message: string, wait: number = 3000) => {
   const toastContainer = document.querySelector<HTMLDivElement>("#toastContainer");
 
   toastContainer?.appendChild(
@@ -126,45 +125,19 @@ const alert = async (type: string, message: string, wait: number = 3000) => {
 };
 
 export async function updateTask(id: number, state: number) {
-  document.querySelector<HTMLSelectElement>(`tr[id='${id}'] select`)?.remove();
-  document
-    .querySelector<HTMLSpanElement>(`tr[id='${id}'] #select`)
-    ?.appendChild(span({ className: "loading loading-dots", id: "loading" }));
+  try {
+    document.querySelector<HTMLSelectElement>(`tr[id='${id}'] select`)?.remove();
+    document
+      .querySelector<HTMLSpanElement>(`tr[id='${id}'] #select`)
+      ?.appendChild(span({ className: "loading loading-dots", id: "loading" }));
 
-  await axios.patch(`http://localhost:3000/tasks/${id}`, { state: state === 0 ? 1 : 0 });
-  const { data: task } = await axios.get<Task>(`http://localhost:3000/tasks/${id}`);
+    await axios.patch(`http://localhost:3000/tasks/${id}`, { state: state === 0 ? 1 : 0 });
+    const { data: task } = await axios.get<Task>(`http://localhost:3000/tasks/${id}`);
 
-  document.querySelector<HTMLSpanElement>(`tr[id='${id}'] #loading`)?.remove();
-  document.querySelector<HTMLTableRowElement>(`tr[id='${id}'] #select`)?.appendChild(selectTaskState(id, task.state));
-}
-
-export async function deleteTask(id: number) {
-  document.querySelector<HTMLTableRowElement>(`tr[id='${id}']`)?.remove();
-
-  await axios.delete(`http://localhost:3000/tasks/${id}`);
-}
-
-export async function addTask(event: MouseEvent | SubmitEvent) {
-  event.preventDefault();
-
-  const inputContainer = document.querySelector<HTMLInputElement>("#inputContainer");
-  const taskName = inputContainer?.children.namedItem("formTaskName") as HTMLInputElement;
-  const assignTo = inputContainer?.children.namedItem("formAssignTo") as HTMLSelectElement;
-
-  if (taskName.value === "" || assignTo.value === "Assign To") return await alert("error", "Invalid task name or selected member");
-
-  const newTaskId = getNewId();
-  const newTask = {
-    taskName: taskName.value,
-    assignTo: assignTo.selectedIndex,
-    expiryDate: getExpiryDate(),
-    state: 1,
-    id: newTaskId,
-  };
-
-  await axios.post("http://localhost:3000/tasks", newTask);
-
-  document.querySelector("tbody")?.appendChild(await TaskDetail(newTask));
-  resetInputFields();
-  await alert("success", "Task addedd successfully!");
+    document.querySelector<HTMLSpanElement>(`tr[id='${id}'] #loading`)?.remove();
+    document.querySelector<HTMLTableRowElement>(`tr[id='${id}'] #select`)?.appendChild(selectTaskState(id, task.state));
+  } catch (err) {
+    await toast("error", (err as any).message);
+    throw new Error((err as any).message);
+  }
 }

@@ -1,10 +1,19 @@
 import axios from "axios";
 import { DOM, Task, User } from "../lib/index";
-import { deleteTask, selectTaskState } from "../lib/utils";
+import { selectTaskState, toast } from "../lib/utils";
 
-export const TaskDetail = async ({ id, taskName, assignTo, expiryDate, state }: Task) => {
-  const { data: users } = await axios.get<User[]>("http://localhost:3000/users");
+export async function deleteTask(id: number) {
+  try {
+    document.querySelector<HTMLTableRowElement>(`tr[id='${id}']`)?.remove();
 
+    await axios.delete(`http://localhost:3000/tasks/${id}`);
+  } catch (err) {
+    await toast("error", (err as any).message);
+    throw new Error((err as any).message);
+  }
+}
+
+export const TaskDetail = ({ id, taskName, assignTo, expiryDate, state }: Task, users: User[]) => {
   return DOM.tr({ id: String(id) }, [
     DOM.th({ textContent: taskName }),
     DOM.th({ textContent: `${users[assignTo - 1].firstName} ${users[assignTo - 1].lastName}` }),
