@@ -1,16 +1,13 @@
 {
   "users": [
     {
-      "id": 1,
-      "firstName": "Mario",
-      "lastName": "Rossi",
-      "age": 70
-    },
-    {
-      "id": 2,
-      "firstName": "Marco",
-      "lastName": "Verdi",
-      "age": 80
+      "updateUser": {
+        "id": 1,
+        "firstName": "Maria",
+        "lastName": "Rossi",
+        "age": "89"
+      },
+      "id": 1
     }
   ]
 }
