@@ -45,7 +45,7 @@ const App = () => {
 
   async function deleteUser(userId: string) {
     try {
-      const { data: user } = await axios.delete<User>(`${VITE_REST_API_URL}/users/${userId}`);
+      await axios.delete<User>(`${VITE_REST_API_URL}/users/${userId}`);
 
       setUsers(users.filter((user) => user.id !== userId));
     } catch (err) {
