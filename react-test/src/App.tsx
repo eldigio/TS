@@ -1,6 +1,7 @@
 import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
 import UserForm, { UserData } from "./components/UserForm";
 import { env } from "./utils/env";
 
@@ -21,9 +22,9 @@ const App = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const { data: users } = await axios.get<User[]>(`${VITE_REST_API_URL}/users`);
+        const { data: fetchedUsers } = await axios.get<User[]>(`${VITE_REST_API_URL}/users`);
 
-        setUsers(users);
+        setUsers(fetchedUsers);
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -35,7 +36,7 @@ const App = () => {
 
   async function addUser(newUserData: UserData) {
     try {
-      const { data: user } = await axios.post<User>(`${VITE_REST_API_URL}/users`, { newUserData });
+      const { data: user } = await axios.post<User>(`${VITE_REST_API_URL}/users`, newUserData);
 
       if (user.id) setUsers([...users, { id: user.id, ...newUserData }]);
     } catch (err) {
@@ -65,17 +66,18 @@ const App = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-5 p-5 items-center">
+      <Navbar />
+      <div className="flex flex-col md:flex-row gap-5 p-5 justify-center md:items-start items-center">
         {loading ? (
           <>
-            <div className="skeleton max-w-sm w-full h96"></div>
-            <div className="skeleton max-w-sm w-full h96"></div>
+            <div className="skeleton max-w-sm w-full h-96"></div>
+            <div className="skeleton max-w-sm w-full h-96"></div>
           </>
         ) : (
           <>
             <div className="card max-w-sm w-full bg-base-200 shadow-xl">
               <div className="card-body gap-4">
-                <h2 className="card-title">Users List</h2>
+                <h2 className="card-title">Users list</h2>
                 <ul className="flex flex-col gap-4">
                   {users.length ? (
                     users.map((user, index) => (
@@ -87,13 +89,16 @@ const App = () => {
                           <small className="text-gray-500">{user.age} years old</small>
                         </div>
                         <div className="flex gap-2">
-                          <div className="tooltip" data-edit="Edit">
-                            <button className="btn btn-ghost text-white" onClick={() => setCurrentUser(user)}>
+                          {/* <button className="bg-amber-500 text-white rounded-xl p-2" onClick={() => formRef.current?.setFormData(user)}>
+                    Edit
+                  </button> */}
+                          <div className="tooltip" data-tip="Edit">
+                            <button className="btn btn-outline btn-warning" onClick={() => setCurrentUser(user)}>
                               <PencilIcon className="w-4 h-4" />
                             </button>
                           </div>
-                          <div className="tooltip" data-edit="Delete">
-                            <button className="btn btn-error text-white" onClick={() => user.id && deleteUser(user.id)}>
+                          <div className="tooltip" data-tip="Delete">
+                            <button className="btn btn-outline btn-error" onClick={() => user.id && deleteUser(user.id)}>
                               <TrashIcon className="w-4 h-4" />
                             </button>
                           </div>
@@ -101,14 +106,15 @@ const App = () => {
                       </li>
                     ))
                   ) : (
-                    <li>No Users</li>
+                    <li>No users</li>
                   )}
                 </ul>
               </div>
             </div>
+            {/* <Form ref={formRef} onSubmit={addUser} /> */}
             <div className="card max-w-sm w-full bg-base-200 shadow-xl">
               <div className="card-body gap-4">
-                <h2 className="card-title">{currentUser ? "Edit User" : "Add User"}</h2>
+                <h2 className="card-title">{currentUser ? "Edit user" : "Add user"}</h2>
                 <UserForm
                   currentData={currentUser}
                   onSubmit={(newUserData) => (currentUser ? updateUser(newUserData) : addUser(newUserData))}

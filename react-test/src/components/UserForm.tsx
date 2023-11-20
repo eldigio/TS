@@ -27,7 +27,7 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
   return (
     <form className="flex flex-col gap-3">
       <div className="form-control w-full max-w-xs">
-        <label htmlFor="" className="label">
+        <label className="label">
           <span className="label-text">First Name</span>
         </label>
         <input
@@ -40,7 +40,7 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         />
       </div>
       <div className="form-control w-full max-w-xs">
-        <label htmlFor="" className="label">
+        <label className="label">
           <span className="label-text">Last Name</span>
         </label>
         <input
@@ -53,7 +53,7 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         />
       </div>
       <div className="form-control w-full max-w-xs">
-        <label htmlFor="" className="label">
+        <label className="label">
           <span className="label-text">Age</span>
         </label>
         <input
@@ -66,9 +66,10 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         />
       </div>
       <button
-        className="btn btn-primary mt-5"
+        className="btn btn-outline btn-primary mt-5"
         onClick={(e) => {
           e.preventDefault();
+          setUserData({});
           userData && onSubmit(userData);
         }}
       >
