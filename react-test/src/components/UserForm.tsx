@@ -9,10 +9,11 @@ export type UserData = {
 
 type UserFormPros = {
   currentData?: User;
+  loading?: boolean;
   onSubmit: (newUserData: UserData) => void;
 };
 
-const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
+const UserForm = ({ currentData, loading = false, onSubmit }: UserFormPros) => {
   const [userData, setUserData] = useState<UserData>();
 
   useEffect(() => {
@@ -32,11 +33,12 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         </label>
         <input
           type="text"
-          placeholder="E.g. John"
+          placeholder={loading ? "Updating User" : "E.g. John"}
           className="input input-bordered w-full max-w-xs"
           name="firstName"
           value={userData?.firstName || ""}
           onChange={handleInputChange}
+          disabled={loading}
         />
       </div>
       <div className="form-control w-full max-w-xs">
@@ -45,11 +47,12 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         </label>
         <input
           type="text"
-          placeholder="E.g. Doe"
+          placeholder={loading ? "Updating User" : "E.g. Doe"}
           className="input input-bordered w-full max-w-xs"
           name="lastName"
           value={userData?.lastName || ""}
           onChange={handleInputChange}
+          disabled={loading}
         />
       </div>
       <div className="form-control w-full max-w-xs">
@@ -58,22 +61,23 @@ const UserForm = ({ currentData, onSubmit }: UserFormPros) => {
         </label>
         <input
           type="number"
-          placeholder="E.g. 27"
+          placeholder={loading ? "Updating User" : "E.g. 27"}
           className="input input-bordered w-full max-w-xs"
           name="age"
           value={userData?.age || ""}
           onChange={handleInputChange}
+          disabled={loading}
         />
       </div>
       <button
         className="btn btn-outline btn-primary mt-5"
         onClick={(e) => {
           e.preventDefault();
-          setUserData({});
           userData && onSubmit(userData);
         }}
+        disabled={loading}
       >
-        {currentData ? "Update" : "Add"}
+        {loading ? <span className="loading loading-spinner loading-md"></span> : currentData ? "Update" : "Add"}
       </button>
     </form>
   );

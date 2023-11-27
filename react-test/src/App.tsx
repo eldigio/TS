@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { CheckCircleIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
@@ -13,7 +13,11 @@ export type User = {
 };
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const [initLoading, setInitLoading] = useState(true);
+  const [fetchLoading, setFetchLoading] = useState(false);
+
   const [users, setUsers] = useState<User[]>([]);
   const [currentUser, setCurrentUser] = useState<User>();
 
@@ -21,13 +25,14 @@ const App = () => {
 
   useEffect(() => {
     const getAllUsers = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       try {
         const { data: fetchedUsers } = await axios.get<User[]>(`${VITE_REST_API_URL}/users`);
 
         setUsers(fetchedUsers);
-        setLoading(false);
+        setInitLoading(false);
       } catch (err) {
-        setLoading(false);
+        setInitLoading(false);
       }
     };
 
@@ -35,30 +40,48 @@ const App = () => {
   }, []);
 
   async function addUser(newUserData: UserData) {
+    setCurrentUser(newUserData);
+    setFetchLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       const { data: user } = await axios.post<User>(`${VITE_REST_API_URL}/users`, newUserData);
 
       if (user.id) setUsers([...users, { id: user.id, ...newUserData }]);
+      setFetchLoading(false);
+      setCurrentUser(undefined);
+      setToastMessage("User added successfully");
+      setTimeout(() => setToastMessage(""), 2500);
     } catch (err) {
+      setFetchLoading(false);
       console.log(err);
     }
   }
 
   async function deleteUser(userId: string) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
       await axios.delete<User>(`${VITE_REST_API_URL}/users/${userId}`);
 
       setUsers(users.filter((user) => user.id !== userId));
+      setToastMessage("User deleted successfully");
+      setTimeout(() => setToastMessage(""), 2500);
     } catch (err) {
+      setFetchLoading(false);
       console.log(err);
     }
   }
 
   async function updateUser(updateUser: User) {
+    setFetchLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
-      await axios.put(`${VITE_REST_API_URL}/users/${updateUser.id}`, { updateUser });
+      await axios.put(`${VITE_REST_API_URL}/users/${updateUser.id}`, updateUser);
 
       setUsers(users.map((user) => (user.id === updateUser.id ? updateUser : user)));
+      setFetchLoading(false);
+      setCurrentUser(undefined);
+      setToastMessage("User updated successfully");
+      setTimeout(() => setToastMessage(""), 2500);
     } catch (err) {
       console.log(err);
     }
@@ -68,7 +91,7 @@ const App = () => {
     <>
       <Navbar />
       <div className="flex flex-col md:flex-row gap-5 p-5 justify-center md:items-start items-center">
-        {loading ? (
+        {initLoading ? (
           <>
             <div className="skeleton max-w-sm w-full h-96"></div>
             <div className="skeleton max-w-sm w-full h-96"></div>
@@ -89,12 +112,9 @@ const App = () => {
                           <small className="text-gray-500">{user.age} years old</small>
                         </div>
                         <div className="flex gap-2">
-                          {/* <button className="bg-amber-500 text-white rounded-xl p-2" onClick={() => formRef.current?.setFormData(user)}>
-                    Edit
-                  </button> */}
                           <div className="tooltip" data-tip="Edit">
                             <button className="btn btn-outline btn-warning" onClick={() => setCurrentUser(user)}>
-                              <PencilIcon className="w-4 h-4" />
+                              <PencilSquareIcon className="w-4 h-4" />
                             </button>
                           </div>
                           <div className="tooltip" data-tip="Delete">
@@ -111,11 +131,11 @@ const App = () => {
                 </ul>
               </div>
             </div>
-            {/* <Form ref={formRef} onSubmit={addUser} /> */}
             <div className="card max-w-sm w-full bg-base-200 shadow-xl">
               <div className="card-body gap-4">
                 <h2 className="card-title">{currentUser ? "Edit user" : "Add user"}</h2>
                 <UserForm
+                  loading={fetchLoading}
                   currentData={currentUser}
                   onSubmit={(newUserData) => (currentUser ? updateUser(newUserData) : addUser(newUserData))}
                 />
@@ -124,6 +144,14 @@ const App = () => {
           </>
         )}
       </div>
+      {toastMessage && (
+        <div className="toast toast-top toast-end">
+          <div className="alert alert-success">
+            <CheckCircleIcon className="w-5 h-5" />
+            <span>{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </>
   );
 };
